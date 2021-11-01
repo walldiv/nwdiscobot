@@ -8,9 +8,7 @@ import org.javacord.api.event.message.reaction.ReactionAddEvent;
 import org.javacord.api.listener.message.reaction.ReactionAddListener;
 import org.javacord.api.util.logging.ExceptionLogger;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -28,6 +26,7 @@ public class PlayerAddRoleListener implements ReactionAddListener {
         AtomicReference<String> thisUserId = new AtomicReference<>("");
         AtomicBoolean bIsMatchingRolesMsg = new AtomicBoolean(false);
         AtomicReference<String> roleToAdd = new AtomicReference<>("");
+        AtomicBoolean bIsBot = new AtomicBoolean(false);
 
         log.info(String.valueOf(reactionAddEvent.getChannel()));
         // GET EMOJI CLICKED FROM MESSAGE - MAP TO ROLE NAME
@@ -47,12 +46,15 @@ public class PlayerAddRoleListener implements ReactionAddListener {
         // GET THE USER THAT CLICKED ON REACTION
         reactionAddEvent.requestUser()
             .thenAccept(user -> {
-                thisUserId.set(user.getIdAsString());
-                log.info(user.getName());
+                if(!user.isBot()) {
+                    thisUserId.set(user.getIdAsString());
+                    log.info(user.getName());
+                }
+                else bIsBot.set(true);
             }).exceptionally(ExceptionLogger.get()).join();
 
         // IF WE MATCH THE RIGHT MESSAGE - PROCEED TO GRANT ROLE TO USER
-        if (bIsMatchingRolesMsg.get()){
+        if (bIsMatchingRolesMsg.get() && !bIsBot.get()){
             DiscordApi api = this.constants.getServer().getApi();
             List<Role> roles = (List<Role>) api.getRolesByName(roleToAdd.get());
             if (roles.size() > 0 && roles.get(0).getName().equalsIgnoreCase(roleToAdd.get())){

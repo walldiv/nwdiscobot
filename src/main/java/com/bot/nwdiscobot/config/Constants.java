@@ -18,6 +18,7 @@ public class Constants {
     /***********    CHANNELS INFO    **********/
     private List<String> textChannels;
     private boolean bHasPlayerRolesChannel = false;
+    private boolean bHasEventsChannel = false;
 
 
     /***********    ROLES INFO    **********/

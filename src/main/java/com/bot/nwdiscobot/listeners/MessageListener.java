@@ -40,15 +40,13 @@ public class MessageListener implements MessageCreateListener {
         }
         if (messageCreateEvent.getMessageContent().equalsIgnoreCase("!?")) {
             List<SlashCommand> commands = api.getGlobalSlashCommands().join();
-            messageCreateEvent.getChannel().sendMessage("AVAILABLE COMMANDS ARE: \n" + commands.toString());
-        }
-        if (messageCreateEvent.getMessageContent().equalsIgnoreCase("!channels")) {
-            Collection<ServerTextChannel> channels = api.getServerTextChannels();
-            String chanString = "";
-            for (ServerTextChannel channel : channels) {
-                chanString += " " + channel.getName();
-            }
-            messageCreateEvent.getChannel().sendMessage("CHANNELS IN SERVER => \n" + chanString);
+            messageCreateEvent.getChannel().sendMessage("AVAILABLE COMMANDS ARE: \n"
+                    + "!whosonline - A message showing who all is online & their roles selected.\n"
+                    + "!meleeonline - A message showing all Melee DPS online.\n"
+                    + "!tanksonline - A message showing all Tanks online.\n"
+                    + "!rangedonline - A message showing all Ranged DPS online.\n"
+                    + "!healsonline - A message showing all Healers online.\n"
+                    + "!magesonline - A message showing all Mages online.\n" );
         }
         if (messageCreateEvent.getMessageContent().equalsIgnoreCase("!whosonline")) {
 //            log.info("CACHED USERS LENGTH => {}", api.getCachedUsers().size());
@@ -62,9 +60,25 @@ public class MessageListener implements MessageCreateListener {
             for(String s : splitStr){
                 log.info("SPLIT STRING => {}", s);
             }
+            if (splitStr[0].toLowerCase(Locale.ROOT).contains("melee")) {
+                String playersStr = getOnlineUsersByRole("nwbot_Melee");
+                messageCreateEvent.getChannel().sendMessage("MELEE ONLINE ARE: \n" + playersStr);
+            }
             if (splitStr[0].toLowerCase(Locale.ROOT).contains("tank")) {
                 String playersStr = getOnlineUsersByRole("nwbot_Tank");
                 messageCreateEvent.getChannel().sendMessage("TANKS ONLINE ARE: \n" + playersStr);
+            }
+            if (splitStr[0].toLowerCase(Locale.ROOT).contains("ranged")) {
+                String playersStr = getOnlineUsersByRole("nwbot_Ranged");
+                messageCreateEvent.getChannel().sendMessage("RANGED ONLINE ARE: \n" + playersStr);
+            }
+            if (splitStr[0].toLowerCase(Locale.ROOT).contains("heal")) {
+                String playersStr = getOnlineUsersByRole("nwbot_Heals");
+                messageCreateEvent.getChannel().sendMessage("HEALS ONLINE ARE: \n" + playersStr);
+            }
+            if (splitStr[0].toLowerCase(Locale.ROOT).contains("mage")) {
+                String playersStr = getOnlineUsersByRole("nwbot_Mage");
+                messageCreateEvent.getChannel().sendMessage("MAGES ONLINE ARE: \n" + playersStr);
             }
         }
     }
@@ -73,7 +87,7 @@ public class MessageListener implements MessageCreateListener {
         String usersOnline = "";
         for(User user : api.getCachedUsers()){
             if(!user.isBot()) {
-                usersOnline = usersOnline.concat(user.getName() + "- ");
+                usersOnline = usersOnline.concat(user.getDisplayName(constants.getServer()) + "- ");
                 for (Role role : user.getRoles(constants.getServer())) {
                     if (role.getName().contains("nwbot_")) {
                         log.info("USER ROLE => {}", role.getName());
@@ -93,9 +107,11 @@ public class MessageListener implements MessageCreateListener {
         Collection<User> usersList = constants.getServer().getRolesByName(role).get(0).getUsers();
         log.info("ROLES FROM SERVER => {}", constants.getServer().getRolesByName(role).get(0).getName());
         for (User user : usersList){
-            log.info("USER IN LIST => {}", user.getName());
-            if (user.getStatus().getStatusString().equalsIgnoreCase("ONLINE")){
-                usersOnline.add(user.getName() + " - " + role);
+            if(!user.isBot()) {
+                log.info("USER IN LIST => {}", user.getDisplayName(constants.getServer()));
+                if (user.getStatus().getStatusString().equalsIgnoreCase("ONLINE")) {
+                    usersOnline.add(user.getName() + " - " + role.replace("nwbot_", ""));
+                }
             }
         }
         AtomicReference<String> usersString = new AtomicReference<>("");
