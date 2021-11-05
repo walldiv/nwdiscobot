@@ -2,15 +2,11 @@ package com.bot.nwdiscobot;
 
 import com.bot.nwdiscobot.config.Constants;
 import com.bot.nwdiscobot.config.ServerSetup;
-import com.bot.nwdiscobot.listeners.JoinListener;
-import com.bot.nwdiscobot.listeners.MessageListener;
-import com.bot.nwdiscobot.listeners.PlayerAddRoleListener;
-import com.bot.nwdiscobot.listeners.PlayerRemoveRoleListener;
+import com.bot.nwdiscobot.listeners.*;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.ServerChannel;
-import org.javacord.api.entity.intent.Intent;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.interaction.SlashCommandInteraction;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +42,7 @@ public class NewWorldDiscordBotApplication {
 
 		//SETUP DEFAULT CHANNEL FOR EVENTS MESSAGE
 		api.addListener(new JoinListener(api, constants));
-
+		//SETUP BOT RECONNECT LISTENER IN CASE BOT CRASHES/RECONNECTS
 		api.addReconnectListener(event -> {
 			log.info("RECONNECT HAPPEND - SERVER => ");
 		});
@@ -55,6 +51,7 @@ public class NewWorldDiscordBotApplication {
 		api.addListener(new MessageListener(api, constants));
 		api.addListener(new PlayerAddRoleListener(constants));
 		api.addListener(new PlayerRemoveRoleListener(constants));
+		api.addListener(new EventButtonListener(constants));
 
 		api.addSlashCommandCreateListener(event -> {
 			SlashCommandInteraction slashCommandInteraction = event.getSlashCommandInteraction();

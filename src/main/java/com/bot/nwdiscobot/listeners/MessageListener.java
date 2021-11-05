@@ -1,9 +1,9 @@
 package com.bot.nwdiscobot.listeners;
 
 import com.bot.nwdiscobot.config.Constants;
+import com.bot.nwdiscobot.events.EventBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.javacord.api.DiscordApi;
-import org.javacord.api.entity.channel.ServerTextChannel;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
@@ -35,10 +35,11 @@ public class MessageListener implements MessageCreateListener {
         Pattern pattern = Pattern.compile("![online]?", Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(messageCreateEvent.getMessageContent());
 
-        if (messageCreateEvent.getMessageContent().equalsIgnoreCase("!ping")) {
-            messageCreateEvent.getChannel().sendMessage("PONG");
+        if (messageCreateEvent.getMessageContent().equalsIgnoreCase("!event")) {
+            log.info("USER SENDING MESSAGE EVENT => {}", messageCreateEvent.getMessage().getUserAuthor().get().getName());
+            new EventBuilder(messageCreateEvent.getMessage().getUserAuthor().get(), this.constants);
         }
-        if (messageCreateEvent.getMessageContent().equalsIgnoreCase("!?")) {
+        else if (messageCreateEvent.getMessageContent().equalsIgnoreCase("!?")) {
             List<SlashCommand> commands = api.getGlobalSlashCommands().join();
             messageCreateEvent.getChannel().sendMessage("AVAILABLE COMMANDS ARE: \n"
                     + "!whosonline - A message showing who all is online & their roles selected.\n"
@@ -48,7 +49,7 @@ public class MessageListener implements MessageCreateListener {
                     + "!healsonline - A message showing all Healers online.\n"
                     + "!magesonline - A message showing all Mages online.\n" );
         }
-        if (messageCreateEvent.getMessageContent().equalsIgnoreCase("!whosonline")) {
+        else if (messageCreateEvent.getMessageContent().equalsIgnoreCase("!whosonline")) {
 //            log.info("CACHED USERS LENGTH => {}", api.getCachedUsers().size());
 //            api.getCachedUsers().forEach(t-> log.info(t.getName()));
             String usersString = this.getAllOnlineUsers();

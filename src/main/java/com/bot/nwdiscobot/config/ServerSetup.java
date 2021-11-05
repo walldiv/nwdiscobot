@@ -17,7 +17,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Slf4j
 public class ServerSetup {
@@ -31,6 +30,7 @@ public class ServerSetup {
         this.api = api;
         this.constants = constants;
 
+        constants.setApi(api);
         List<Server> servers = (List<Server>) api.getServers();
         if (servers.size() > 0) {
             constants.setServer(servers.get(0));

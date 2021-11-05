@@ -1,6 +1,7 @@
 package com.bot.nwdiscobot.config;
 
 import lombok.Data;
+import org.javacord.api.DiscordApi;
 import org.javacord.api.entity.server.Server;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +13,7 @@ import java.util.Map;
 @Component
 public class Constants {
     /***********    SERVER INFO    **********/
+    private DiscordApi api;
     private Server server;
 
 

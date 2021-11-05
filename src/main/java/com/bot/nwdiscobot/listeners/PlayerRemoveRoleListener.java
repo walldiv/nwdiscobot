@@ -8,9 +8,7 @@ import org.javacord.api.event.message.reaction.ReactionRemoveEvent;
 import org.javacord.api.listener.message.reaction.ReactionRemoveListener;
 import org.javacord.api.util.logging.ExceptionLogger;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
